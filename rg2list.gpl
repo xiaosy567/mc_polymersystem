@@ -1,0 +1,49 @@
+reset
+
+load "tempfn.gpl"
+
+dtflname=fn.'.lst'
+f(x)=a*x+b
+fit f(x) dtflname u (log($1)):(log($2)) via a,b
+g(x)=0.5*x+b
+xlow=log(4)
+xhigh=log(256)
+ylow=g(xlow)+0.1
+yhigh=g(xhigh)+0.1
+
+set term post enh size 7,6
+set out fn.'.eps'
+#set term X11 size 640,360 #16:9 nice look
+set multiplot
+#unset key
+#set title 
+set xlabel 'log(N) (N: the number of atoms)' #font "Arial,16"# tc rgb "#0000ff"
+#set encoding default
+set ylabel yname #font "UTF-8,16"# tc rgb "#880000"
+set xrange [xlow:xhigh]
+set yrange [ylow:yhigh]
+set ytics nomirror #font "UTF-8,12" #tc rgb "#880000"
+#set xtics nomirror #font "UTF-8,12" #tc rgb "#0000ff"
+set xtics ("" log(4), "log(8)" log(8), "log(16)" log(16), "log(32)" log(32), "log(64)" log(64), "log(128)" log(128), "" log(256))
+#set mxtics 5
+#set mytics 2
+#set logscale xy
+#set key spacing 1.5
+#set key outside
+#print a
+temptitle=sprintf("fitted line with a=%f",a)
+
+#set key left
+xmid=(xhigh+xlow)/3.0
+ymid=g(xmid)+0.3
+set arrow 1 from xlow,ylow to xhigh,yhigh nohead lt 4 lw 1 lc rgb "black"
+set label 1 at xmid,ymid "k=0.5" center font "UTF-8,15"
+#plot f(x) t temptitle w l lt 1 lw 1 lc rgb "black", \
+
+plot dtflname u (log($1)):(log($2)) t "" w l lt 1 lw 4 lc rgb "black", \
+     dtflname u (log($1)):(log($2)):(log($3)):(log($4)) t "" with errorbars, \
+     dtflname u (log($1)):(log($2)) t "" w p pt 5
+
+unset multiplot
+
+
